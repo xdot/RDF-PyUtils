@@ -5,7 +5,7 @@ import derps
 def color(color):
     return u'\u00A7' + color
 
-class RDFMain():
+class RDFMain(PythonPlugin):
     def onEnable(self):
         print "RDF-PyUtils enabled"
 
