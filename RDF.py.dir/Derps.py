@@ -1,19 +1,24 @@
 from __future__ import with_statement
 
-from plugin import color
+import random
+
+from Helper import color
 
 import org.bukkit as bukkit
 
-import random
+derps = []
 
 def load_derps(filename):
+    global derps
+    
     with open(filename) as f:
-            return f.read().splitlines()
+            derps = f.read().splitlines()
 
 def broadcast_derp(sender, message):
     bukkit.Bukkit.broadcastMessage(''.join([color("2"), " * ", color("f"),  ender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
 
-def onCommandDerp(sender, args, derps):
+@hook.command("derp")
+def onCommandDerp(sender, args):
     if len(args) > 0:
         broadcast_derp(sender, derps[int(args[0]) - 1])
     else:
