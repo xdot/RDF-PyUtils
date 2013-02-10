@@ -1,14 +1,12 @@
-__plugin_mainclass__ = "RDFMain"
-
 from Helper import color
 
 import FunAliases
 import Aliases
 import Derps
 
-class RDFMain(PythonPlugin):
-    def onEnable(self):
-        print "RDF-PyUtils enabled"
+@hook.enable
+def onEnable():
+    Derps.load_derps("plugins/RDF.py.dir/derps.txt")
 
-    def onDisable(self):
-        print "RDF-PyUtils disabled"
+
+

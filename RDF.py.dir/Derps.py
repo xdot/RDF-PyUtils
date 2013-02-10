@@ -15,7 +15,7 @@ def load_derps(filename):
             derps = f.read().splitlines()
 
 def broadcast_derp(sender, message):
-    bukkit.Bukkit.broadcastMessage(''.join([color("2"), " * ", color("f"),  ender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
+    bukkit.Bukkit.broadcastMessage(''.join([color("2"), " * ", color("f"), sender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
 
 @hook.command("derp")
 def onCommandDerp(sender, args):
