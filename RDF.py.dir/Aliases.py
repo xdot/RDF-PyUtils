@@ -1,4 +1,5 @@
 from Helper import color
+from Helper import sudo
 
 import org.bukkit as bukkit
 
@@ -24,7 +25,7 @@ def onCommandFixLag(sender, args):
 
     bukkit.Bukkit.dispatchCommand(sender, "butcher -f")
 
-    bukkit.Bukkit.dispatchCommand(bukkit.Bukkit.getConsoleSender(), "save-all")
+    sudo("save-all")
 
     sender.sendMessage("You fixed teh lags!")
     return True
@@ -40,4 +41,10 @@ def onCommandC(sender, args):
 def onCommandAFK(sender, args):
     sender.sendMessage("Please do not go AFK, it wastes my bandwidth")
     sender.sendMessage("Instead, please log off the server")
+    return True
+
+# Save all
+@hook.command("save")
+def onCommandSave(sender, args):
+    sudo("save-all")
     return True

@@ -2,7 +2,12 @@ from Helper import color
 
 import FunAliases
 import Aliases
+
 import Derps
+
+import NameSystem
+
+import Bus
 
 @hook.enable
 def onEnable():
