@@ -19,7 +19,7 @@ def bus(x1, y1, z1, x2, y2, z2, player, block):
         setBlock(player, block, x1, y1, z1)
         x1 += 1
 
-    while y1 != y2
+    while y1 != y2:
         setBlock(player, block, x1, y1, z1)
         y1 += 1
 

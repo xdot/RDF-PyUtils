@@ -17,7 +17,7 @@ def load_derps(filename):
 def broadcast_derp(sender, message):
     bukkit.Bukkit.broadcastMessage(''.join([color("2"), " * ", color("f"), sender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
 
-@hook.command("derp",description="Let your derp shine!",usage="/<command> [number] Displays a random derp, or one of the specified number.")
+@hook.command("derp",description="Let your derp shine!")
 def onCommandDerp(sender, args):
     if len(args) > 0:
         broadcast_derp(sender, derps[int(args[0]) - 1])
