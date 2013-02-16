@@ -6,6 +6,8 @@ import Aliases
 import Derps
 
 import NameSystem
+import Schematics
+import DomainNameForcer
 
 import Bus
 

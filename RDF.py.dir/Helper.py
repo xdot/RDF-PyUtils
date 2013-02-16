@@ -5,3 +5,4 @@ def color(color):
 
 def sudo(command):
     bukkit.Bukkit.dispatchMessage(bukkit.Bukkit.getConsoleSender(), command)
+
