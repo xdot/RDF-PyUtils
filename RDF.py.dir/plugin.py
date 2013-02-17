@@ -6,6 +6,7 @@ import Aliases
 import Derps
 
 import NameSystem
+import OnlinePlayers
 import Schematics
 import DomainNameForcer
 

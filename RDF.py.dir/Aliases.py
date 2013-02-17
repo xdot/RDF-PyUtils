@@ -3,6 +3,14 @@ from Helper import sudo
 
 import org.bukkit as bukkit
 
+# TODO:
+# /ra
+# /expr
+# /huzza
+# /me
+# /fast
+# /fixme
+
 # Time Commands
 @hook.command("day",description="Sets your time to day.")
 def onCommandDay(sender, args):

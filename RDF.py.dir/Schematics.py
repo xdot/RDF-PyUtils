@@ -7,9 +7,13 @@ def onCommandSave(sender, args):
 
     bukkit.Bukkit.dispatchCommand(sender, ''.join(["/schematic save mcedit ", sender.getName(), "/", args[0]]))
 
+    return True
+
 @hook.command("/load")
-def onCommandSave(sender, args):
+def onCommandLoad(sender, args):
     if len(args) != 1:
         return False
 
     bukkit.Bukkit.dispatchCommand(sender, ''.join(["/schematic load mcedit ", sender.getName(), "/", args[0]])) 
+
+    return True

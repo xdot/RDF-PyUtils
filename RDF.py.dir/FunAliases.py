@@ -2,6 +2,9 @@ from Helper import color
 
 import org.bukkit as bukkit
 
+# TODO:
+# /sound
+
 # Animal Sounds
 def broadcast_animal_sound(sender, message):
     bukkit.Bukkit.broadcastMessage(''.join([color("e"), sender.getName(), " ", color("f"), message]))
