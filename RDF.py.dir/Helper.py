@@ -5,6 +5,7 @@ from java.util.logging import Level
 def color(color):
     return u'\u00A7' + color
 
+# Execute a command with root permissions
 def sudo(command):
     bukkit.Bukkit.dispatchCommand(bukkit.Bukkit.getConsoleSender(), command)
 
