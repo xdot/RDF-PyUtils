@@ -1,6 +1,6 @@
 import org.bukkit as bukkit
 
-@hook.command("/save")
+@hook.command("/save", usage="/<command> <name>")
 def onCommandSave(sender, args):
     if len(args) != 1:
         return False
@@ -9,7 +9,7 @@ def onCommandSave(sender, args):
 
     return True
 
-@hook.command("/load")
+@hook.command("/load", usage="/<command> <name>")
 def onCommandLoad(sender, args):
     if len(args) != 1:
         return False

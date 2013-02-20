@@ -12,7 +12,7 @@ def load_derps(filename):
     global derps
     
     with open(filename) as f:
-            derps = f.read().splitlines()
+            derps = f.readlines()
 
 def broadcast_derp(sender, message):
     bukkit.Bukkit.broadcastMessage(''.join([color("2"), " * ", color("f"), sender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
@@ -20,7 +20,13 @@ def broadcast_derp(sender, message):
 @hook.command("derp", description="Let your derp shine!")
 def onCommandDerp(sender, args):
     if len(args) > 0:
-        broadcast_derp(sender, derps[int(args[0])])
+        index = int(args[0])
+        
+        if index >= len(derps):
+            sender.sendMessage("Index out of range")
+            return True
+        
+        broadcast_derp(sender, derps[index])
     else:
         broadcast_derp(sender, random.choice(derps))
 

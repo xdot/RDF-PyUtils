@@ -65,8 +65,11 @@ def onCommandLag(sender, args):
     sender.kickPlayer("I FIXED YOUR LAG! :D <3 Jessassin :P")
     return True
 
-@hook.command("join", description="Make someone join the server!")
+@hook.command("join", description="Make someone join the server!", usage="/<command> <player> [location]")
 def onCommandJoin(sender, args):
+    if len(args) < 1:
+        return False
+    
     bukkit.Bukkit.broadcastMessage(''.join([color("e"), args[0], " joined the game"]))
     
     if len(args) > 1:
@@ -76,8 +79,8 @@ def onCommandJoin(sender, args):
 
 @hook.command("hat", description="Get the most fashionable hat!")
 def onCommandHat(sender, args):
-    sender.getInventory().setHelmet(sender.getItemHand())
-    sender.getInventory().removeItem(sender.getItemHand())
+    sender.getInventory().setHelmet(sender.getItemInHand())
+    sender.getInventory().removeItem(sender.getItemInHand())
 
     sender.sendMessage("Look at your hat, your hat is amazing!")
 
