@@ -1,9 +1,8 @@
 from Helper import color
 
-import org.bukkit as bukkit
+from org.bukkit import Effect
 
-# TODO:
-# /sound
+import org.bukkit as bukkit
 
 # Animal Sounds
 def broadcast_animal_sound(sender, message):
@@ -92,5 +91,24 @@ def onCommandHuzza(sender, args):
     
     bukkit.Bukkit.broadcastMessage(''.join([sender.getName(), color("f"), " Yells: HUZZA!"]))
     bukkit.Bukkit.dispatchCommand(sender, "suicide")
+
+    return True
+
+@hook.command("sound")
+def onCommandSound(sender, args):
+    location = sender.getLocation()
+    world = sender.getWorld()
+
+    world.playEffect(location, Effect.BOW_FIRE, 1, 0)
+    world.playEffect(location, Effect.EXTINGUISH, 1, 0)
+    world.playEffect(location, Effect.GHAST_SHRIEK, 1, 0)
+    world.playEffect(location, Effect.CLICK1, 1, 0)
+    world.playEffect(location, Effect.CLICK2, 1, 0)
+    world.playEffect(location, Effect.GHAST_SHOOT, 1, 0)
+    world.playEffect(location, Effect.POTION_BREAK, 1, 0)
+    world.playEffect(location, Effect.ZOMBIE_CHEW_WOODEN_DOOR, 1, 0)
+    world.playEffect(location, Effect.ZOMBIE_CHEW_IRON_DOOR, 1, 0)
+    world.playEffect(location, Effect.ZOMBIE_DESTROY_DOOR, 1, 0)
+    world.playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 0)
 
     return True

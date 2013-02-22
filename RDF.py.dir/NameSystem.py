@@ -27,14 +27,6 @@ def onCommandTag(sender, args):
     sudo(''.join(["/pex user ", args[2], " group ", args[0], args[1]]))
     return True
 
-@hook.command("skillup", description="Promote a user.")
-def onCommandSkillup(sender, args):
-    return True
-        
-@hook.command("skilldown", description="Demote a user.")
-def onCommandSkilldown(sender,args):
-    return True
-
 @hook.command("fixname")
 def onCommandFixname(sender, args):
     # WIP

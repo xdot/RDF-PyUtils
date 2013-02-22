@@ -3,12 +3,14 @@ from Helper import sudo
 
 import org.bukkit as bukkit
 
+from org.bukkit.potion import PotionEffectType
+from org.bukkit.potion import PotionEffect
+
 # TODO:
 # /ra
 # /expr
 # /me
-# /fast
-# /fixme
+# /temp
 
 # Time Commands
 @hook.command("day", description="Sets your time to day.")
@@ -57,3 +59,21 @@ def onCommandAFK(sender, args):
 def onCommandSave(sender, args):                         
     sudo("save-all")
     return True
+
+# Fast
+@hook.command("fast")
+def onCommandFast(sender, args):
+    sender.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 5000, 50))
+    sender.addPotionEffect(PotionEffect(PotionEffectType.FAST_DIGGING, 5000, 50))
+    sender.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 5000, 8))
+    
+    return True
+
+# Remove all potion effects
+@hook.command("fixme", description="Removes all active potion effects")
+def onCommmandFixMe(sender, args):
+    for potion in sender.getActivePotionEffects():
+        sender.removePotionEffect(potion.getType())
+
+    return True
+    

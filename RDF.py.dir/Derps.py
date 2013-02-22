@@ -22,7 +22,7 @@ def onCommandDerp(sender, args):
     if len(args) > 0:
         index = int(args[0])
         
-        if index >= len(derps):
+        if index >= len(derps) or index < 0:
             sender.sendMessage("Index out of range")
             return True
         
