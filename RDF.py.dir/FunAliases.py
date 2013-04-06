@@ -76,6 +76,7 @@ def onCommandJoin(sender, args):
 
     return True
 
+# Hat
 @hook.command("hat", description="Get the most fashionable hat!")
 def onCommandHat(sender, args):
     sender.getInventory().setHelmet(sender.getItemInHand())
@@ -85,6 +86,7 @@ def onCommandHat(sender, args):
 
     return True
 
+# Huzza
 @hook.command("huzza")
 def onCommandHuzza(sender, args):
     # TODO: Add support for custom name colors
@@ -94,6 +96,7 @@ def onCommandHuzza(sender, args):
 
     return True
 
+# Effects
 @hook.command("sound")
 def onCommandSound(sender, args):
     location = sender.getLocation()
@@ -111,4 +114,37 @@ def onCommandSound(sender, args):
     world.playEffect(location, Effect.ZOMBIE_DESTROY_DOOR, 1, 0)
     world.playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 0)
 
+    return True
+
+# Temperature convertion
+@hook.command("temp", usage="/<command> <temperature> <F,C>")
+def onCommandTemp(sender, args):
+    if len(args) < 2:
+        return False
+
+    temp = int(args[0])
+        
+    if args[1] == "C":
+        result = ((temp * 9) / 5) + 32
+        
+        sender.sendMessage(''.join([args[0], " Degrees Celsius Is ", str(result), " Degrees Farenheit"])) 
+        return True
+
+    elif args[1] == "F":
+        result = ((temp - 32) * 5) / 9
+
+        sender.sendMessage(''.join([args[0], " Degrees Farenheit Is ", str(result), " Degrees Celsius"]))
+        return True
+
+    return False
+
+# Action
+@hook.command("me", usage="/<command> <action>")
+def onCommandMe(sender, args):
+    if len(args) < 1:
+        return False
+    
+    message = ' '.join(args)
+    
+    bukkit.Bukkit.broadcastMessage(''.join([color("7"), "*", color("e"), sender.getName(), color("f"), " ", message]))
     return True

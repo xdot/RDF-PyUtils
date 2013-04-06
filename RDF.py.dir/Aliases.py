@@ -9,8 +9,6 @@ from org.bukkit.potion import PotionEffect
 # TODO:
 # /ra
 # /expr
-# /me
-# /temp
 
 # Time Commands
 @hook.command("day", description="Sets your time to day.")
@@ -66,6 +64,8 @@ def onCommandFast(sender, args):
     sender.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 5000, 50))
     sender.addPotionEffect(PotionEffect(PotionEffectType.FAST_DIGGING, 5000, 50))
     sender.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 5000, 8))
+
+    sender.sendMessage(''.join([color("5"), color("l"), "SUPER", color("6"), " speed! :D"]))
     
     return True
 
