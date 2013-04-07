@@ -34,6 +34,14 @@ def init(directory):
 
     loadData()
 
+def backup(directory):
+    global path
+
+    oldPath = path
+    path = directory
+    saveData()
+    path = oldPath
+
 @hook.command("playerinfo", usage="/<command> <playerName>")
 def onCommandPlayerInfo(sender, args):
     if len(args) != 1:
@@ -42,23 +50,33 @@ def onCommandPlayerInfo(sender, args):
     name = args[0]
 
     if name not in latest_ip or name not in known_ips:
-        sender.sendMessage(''.join("No IP information for: ", name))
+        sender.sendMessage(''.join(["No IP information for: ", name]))
 
         return True
 
-    sender.sendMessage(''.join("Showing IP Information for: ", name))
+    sender.sendMessage(''.join(["Showing IP Information for: ", name]))
 
-    sender.sendMessage(''.join("Latest IP: ", latest_ip[name]))
-    sender.sendMessage(''.join("Known IPs: ", ', '.join(known_ips[name])))
-
-    # WIP
+    sender.sendMessage(''.join(["Latest IP: ", latest_ip[name]]))
+    sender.sendMessage(''.join(["Known IPs: ", ', '.join(known_ips[name])]))
 
     return True
 
-@hook.command("ipinfo")
+@hook.command("ipinfo", usage="/<command> <ip>")
 def onCommandIPInfo(sender, args):
+    if len(args) != 1:
+        return False
 
-    # WIP
+    ip = args[0]
+
+    if ip not in latest_player or ip not in known_players:
+        sender.sendMessage(''.join(["No Player information for: ", ip]))
+
+        return True
+
+    sender.sendMessage(''.join(["Showing Player Information for: ", ip]))
+
+    sender.sendMessage(''.join(["Latest Player: ", latest_player[ip]]))
+    sender.sendMessage(''.join(["Known Players: ", ', '.join(known_players[ip])]))
     
     return True
 
@@ -71,19 +89,14 @@ def registerIP(playerName, ip):
     latest_ip[playerName] = ip
     latest_player[ip] = playerName
 
-    known_ips[playerName].append(ip)
-    known_players[ip].append(playerName)
+    if ip not in known_ips[playerName]:
+        known_ips[playerName].append(ip)
 
-# TEST
-@hook.command("_registerIP")
-def onCommand_RegisterIP(sender, args):
-    if len(args) != 2:
-        return False
+    if ip not in known_players[ip]:
+        known_players[ip].append(playerName)
 
-    registerIP(args[0], args[1])
+@hook.event("player.PlayerJoinEvent", "Monitor")
+def onPlayerJoin(event):
+    player = event.getPlayer()
 
-    info(''.join(["Registered Player ", args[0], " with IP ", args[1]]))
-
-    onCommandPlayerInfo(sender, args)
-
-    return True
+    registerIP(player.getName(), player.getAddress().getHostName())

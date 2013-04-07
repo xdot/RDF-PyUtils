@@ -7,7 +7,7 @@ def color(color):
 
 # Execute a command with root permissions
 def sudo(command):
-    bukkit.dispatchCommand(bukkit.Bukkit.getConsoleSender(), command)
+    bukkit.dispatchCommand(bukkit.getConsoleSender(), command)
 
 def info(message):
     bukkit.getServer().getLogger().log(Level.INFO, message)
