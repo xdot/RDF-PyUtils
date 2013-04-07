@@ -2,11 +2,11 @@ from Helper import color
 
 from org.bukkit import Effect
 
-import org.bukkit as bukkit
+from org.bukkit.Bukkit import broadcastMessage
 
 # Animal Sounds
 def broadcast_animal_sound(sender, message):
-    bukkit.Bukkit.broadcastMessage(''.join([color("e"), sender.getName(), " ", color("f"), message]))
+    broadcastMessage(''.join([color("e"), sender.getName(), " ", color("f"), message]))
 
 @hook.command("lemur", description="Bark like a lemur!")
 def onCommandLemur(sender, args):
@@ -69,10 +69,10 @@ def onCommandJoin(sender, args):
     if len(args) < 1:
         return False
     
-    bukkit.Bukkit.broadcastMessage(''.join([color("e"), args[0], " joined the game"]))
+    broadcastMessage(''.join([color("e"), args[0], " joined the game"]))
     
     if len(args) > 1:
-        bukkit.Bukkit.broadcastMessage(''.join(["Player ", args[0], " comes from ", args[1]]))
+        broadcastMessage(''.join(["Player ", args[0], " comes from ", args[1]]))
 
     return True
 
@@ -146,5 +146,6 @@ def onCommandMe(sender, args):
     
     message = ' '.join(args)
     
-    bukkit.Bukkit.broadcastMessage(''.join([color("7"), "*", color("e"), sender.getName(), color("f"), " ", message]))
+    broadcastMessage(''.join([color("7"), "*", color("e"), sender.getName(), color("f"), " ", message]))
+
     return True

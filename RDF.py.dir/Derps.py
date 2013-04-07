@@ -4,7 +4,7 @@ import random
 
 from Helper import color
 
-import org.bukkit as bukkit
+from org.bukkit.Bukkit import broadcastMessage
 
 derps = []
 
@@ -15,7 +15,7 @@ def load_derps(filename):
             derps = f.readlines()
 
 def broadcast_derp(sender, message):
-    bukkit.Bukkit.broadcastMessage(''.join([color("2"), " * ", color("f"), sender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
+    broadcastMessage(''.join([color("2"), " * ", color("f"), sender.getName(), color("l"), " DERP! ", color("r"), color("d"),  message]))
 
 @hook.command("derp", description="Let your derp shine!")
 def onCommandDerp(sender, args):

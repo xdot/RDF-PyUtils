@@ -1,6 +1,8 @@
 from Helper import color
 from Helper import sudo
 
+from org.bukkit.Bukkit import dispatchCommand
+
 @hook.command("tags", description="View the tags of the RDF")
 def onCommandTags(sender, args):
     sender.sendMessage(''.join([color("c"), "M", color("f"), " - Moderator"]))
@@ -28,17 +30,19 @@ def onCommandTag(sender, args):
     # TODO: Add error checking and better formatting
 
     sudo(''.join(["pex user ", args[2], " group ", args[0], args[1]]))
+
     return True
 
 @hook.command("skillup", description="Promote a user.")
 def onCommandSkillup(sender, args):
-    bukkit.Bukkit.dispatchCommand(sender, "pex promote " + args[0])
+    dispatchCommand(sender, "pex promote " + args[0])
     
     return True
         
 @hook.command("skilldown", description="Demote a user.")
 def onCommandSkilldown(sender,args):
-    bukkit.Bukkit.dispatchCommand(sender, "pex demote " + args[0])
+    dispatchCommand(sender, "pex demote " + args[0])
+
     return True
 
 @hook.command("fixname")
@@ -47,28 +51,3 @@ def onCommandFixname(sender, args):
 
     return True
 
-@hook.command("nameformat", usage="/<command> <color,prefixsize,suffixsize,style> <?>")
-def onCommandNameFormat(sender, args):
-     if len(args) < 2:
-        return False
-
-    # TODO: Add permission check
-    # TODO: Add color/style whitelist
-    
-    # WIP
-    
-'''
-    if args[0] == "color":
-        return True
-
-    elif args[0] == "prefixsize":
-        return True
-
-    elif args[0] == "suffixsize":
-        return True
-
-    elif args[0] == "style":
-        return True
-'''
-
-    return False

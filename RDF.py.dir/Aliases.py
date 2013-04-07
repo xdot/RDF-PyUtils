@@ -1,7 +1,7 @@
 from Helper import color
 from Helper import sudo
 
-import org.bukkit as bukkit
+from org.bukkit.Bukkit import dispatchCommand
 
 from org.bukkit.potion import PotionEffectType
 from org.bukkit.potion import PotionEffect
@@ -13,22 +13,22 @@ from org.bukkit.potion import PotionEffect
 # Time Commands
 @hook.command("day", description="Sets your time to day.")
 def onCommandDay(sender, args):
-    bukkit.Bukkit.dispatchCommand(sender, "ptime @noon")
+    dispatchCommand(sender, "ptime @noon")
     return True
 
 @hook.command("night", description="Sets your time to night.")
 def onCommandNight(sender, args):
-    bukkit.Bukkit.dispatchCommand(sender, "ptime @midnight")
+    dispatchCommand(sender, "ptime @midnight")
     return True
 
 # Fix lag
 @hook.command("fixlag", description="Clears out minecarts,arrows,items, etc.")
 def onCommandFixLag(sender, args):
-    bukkit.Bukkit.dispatchCommand(sender, "rem items -1")
-    bukkit.Bukkit.dispatchCommand(sender, "rem arrows -1")
-    bukkit.Bukkit.dispatchCommand(sender, "rem boats -1")
-    bukkit.Bukkit.dispatchCommand(sender, "rem paintings -1")
-    bukkit.Bukkit.dispatchCommand(sender, "rem xp -1")
+    dispatchCommand(sender, "rem items -1")
+    dispatchCommand(sender, "rem arrows -1")
+    dispatchCommand(sender, "rem boats -1")
+    dispatchCommand(sender, "rem paintings -1")
+    dispatchCommand(sender, "rem xp -1")
 
     bukkit.Bukkit.dispatchCommand(sender, "butcher -f")
 
@@ -65,7 +65,8 @@ def onCommandFast(sender, args):
     sender.addPotionEffect(PotionEffect(PotionEffectType.FAST_DIGGING, 5000, 50))
     sender.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 5000, 8))
 
-    sender.sendMessage(''.join([color("5"), color("l"), "SUPER", color("6"), " speed! :D"]))
+    sender.sendMessage("SUPER SPEED!")
+    sender.sendMessage("To stop this effect, type /fixme")
     
     return True
 
