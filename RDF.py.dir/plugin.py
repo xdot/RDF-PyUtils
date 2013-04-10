@@ -1,7 +1,8 @@
 from Helper import color
 
-import FunAliases
 import Aliases
+import FunAliases
+import MiscAliases
 
 import Derps
 
