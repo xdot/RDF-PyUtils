@@ -119,8 +119,8 @@ def onCommandPlot(sender, args):
 
             return True
 
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        if int(args[1]) < -Manager.radius or int(args[1]) >= Manager.radius or int(args[2]) < -Manager.radius or int(args[2]) >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", args[1], ", ", args[2], " is out of range"]))
 
             return True
 

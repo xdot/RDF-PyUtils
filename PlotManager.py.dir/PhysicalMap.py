@@ -58,7 +58,7 @@ def unclaim(x, z):
 
 @hook.command("plotmap")
 def onCommandPlotmap(sender, args):
-    if len(args) == 0:
+    if len(args) != 1:
         showHelp(sender)
 
         return True
@@ -73,11 +73,6 @@ def onCommandPlotmap(sender, args):
         return True
 
     if cmd == "claim":
-        if len(args) != 1:
-            showHelp(sender)
-
-            return True
-
         if Manager.claim(sender.getName(), plotCoords[0], plotCoords[1]):
             sender.sendMessage(''.join(["You successfully claimed plot ", str(plotCoords[0]), ", ", str(plotCoords[1])]))
         else:
@@ -86,11 +81,6 @@ def onCommandPlotmap(sender, args):
         return True
 
     elif cmd == "unclaim":
-        if len(args) != 1:
-            showHelp(sender)
-
-            return True
-
         if Manager.unclaim(sender.getName(), plotCoords[0], plotCoords[1]):
             sender.sendMessage(''.join(["You successfully unclaimed plot ", str(plotCoords[0]), ", ", str(plotCoords[1])]))
         else:
@@ -99,11 +89,6 @@ def onCommandPlotmap(sender, args):
         return True
 
     elif cmd == "info":
-        if len(args) != 1:
-            showHelp(sender)
-
-            return True
-
         plot = Manager.getPlot(plotCoords[0], plotCoords[1])
 
         sender.sendMessage(''.join(["--- Plot ", str(plotCoords[0]), ", ", str(plotCoords[1]), " ---"]))
@@ -125,11 +110,6 @@ def onCommandPlotmap(sender, args):
         return True
 
     elif cmd == "tp":
-        if len(args) != 1:
-            showHelp(sender)
-
-            return True
-
         loc = sender.getLocation()
 
         plotCoords = getPlotCoords(int(loc.getX()), int(loc.getZ()))
@@ -137,8 +117,8 @@ def onCommandPlotmap(sender, args):
         x = Manager.getCentreX(plotCoords[0])
         z = Manager.getCentreZ(plotCoords[1])
 
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        if plotCoords[0] < -Manager.radius or plotCoords[0] >= Manager.radius or plotCoords[1] < -Manager.radius or plotCoords[1] >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(plotCoords[0]), ", ", str(plotCoords[1]), " is out of range"]))
 
             return True
 
@@ -155,15 +135,8 @@ def onCommandPlotmap(sender, args):
 
             return True
 
-        if len(args) != 2 or not args[1].isdigit():
-            showHelp(sender)
-
-            return True
-        
-        radius = int(args[1])
-
-        for x in xrange(-radius, radius):
-            for z in xrange(-radius, radius):
+        for x in xrange(-Manager.radius, Manager.radius):
+            for z in xrange(-Manager.radius, Manager.radius):
                 position = getMapCoords(x, z)
 
                 world.getBlockAt(position[0], mapCentre[1], position[1]).setTypeId(OFF)
@@ -177,11 +150,6 @@ def onCommandPlotmap(sender, args):
         if sender.getName().lower() not in Manager.ops:
             sender.sendMessage("You don't have permission to execute this command")
 
-            return True
-
-        if len(args) != 1:
-            showHelp(sender)
-            
             return True
 
         for pos, plot in Manager.plots.iteritems():
@@ -206,5 +174,5 @@ def showHelp(sender):
     sender.sendMessage("/plotmap info")
     sender.sendMessage("/plotmap tp")
     sender.sendMessage("--- Admin commands ---")
-    sender.sendMessage("/plotmap generate <radius>")
+    sender.sendMessage("/plotmap generate")
     sender.sendMessage("/plotmap update")
