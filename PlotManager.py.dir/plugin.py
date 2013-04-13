@@ -1,17 +1,17 @@
 import Manager
 
+import PhysicalMap
+
 directory = "/plugins/PlotManager.py.dir"
 
 @hook.enable
 def onEnable():
     # Manager.load(directory)
-
     pass
 
 @hook.disable
 def onDisable():
     # Manager.save(directory)
-
     pass
 
 @hook.command("plot")
@@ -39,10 +39,8 @@ def onCommandPlot(sender, args):
         
         if Manager.claim(sender.getName(), x, z):
             sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-
-            # Manager.save(directory)
         else:
-            sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
+            sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that this is a free plot and that you are allowed to claim plots"]))
      
     elif cmd == "unclaim":
         if len(args) == 1:
@@ -60,8 +58,6 @@ def onCommandPlot(sender, args):
 
         if Manager.unclaim(sender.getName(), x, z):
             sender.sendMessage(''.join(["You successfully unclaimed plot ", str(x), ", ", str(z)]))
-
-            # Manager.save(directory)
         else:
             sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that you are the owner of this plot"]))
 
@@ -131,9 +127,6 @@ def onCommandPlot(sender, args):
             for i in xrange(0, step):
                 if Manager.claim(name, x, z):
 	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-
-	            # Manager.save(directory)
-
                     return True
 
                 x -= 1
@@ -141,9 +134,6 @@ def onCommandPlot(sender, args):
             for i in xrange(0, step):
                 if Manager.claim(name, x, z):
 	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-
-	            # Manager.save(directory)
-
                     return True
 
                 z -= 1
@@ -153,9 +143,6 @@ def onCommandPlot(sender, args):
             for i in xrange(0, step):
                 if Manager.claim(name, x, z):
 	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-
-	            # Manager.save(directory)
-
                     return True
 
                 x += 1
@@ -163,49 +150,59 @@ def onCommandPlot(sender, args):
             for i in xrange(0, step):
                 if Manager.claim(name, x, z):
 	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-
-	            # Manager.save(directory)
-
                     return True
 
                 x -= 1
         
         sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
 
-        # Manager.save(directory)
-
         return True
 
     elif cmd == "playerinfo":
+        if len(args) == 2:
+            player = args[1]
+
+        elif len(args) == 1:
+            player = sender.getName()
+
+        else:
+             showHelp(sender)
+
+             return True
+
+        if player not in Manager.players:
+             sender.sendMessage(''.join(["Can't find player ", player]))
+
+             return True
+
+        sender.sendMessage(''.join(["--- Plots claimed by ", player, " ---"]))
+
+        for pos, plot in Manager.plots.iteritems():
+            if plot.status == Manager.PlotStatus.CLAIMED and plot.owner == player:
+                sender.sendMessage(''.join([str(pos[0]), ", ", str(pos[1])]))
+
+        sender.sendMessage(''.join([player, " can claim up to ", str(Manager.players[player].numPlots), " additional plots"]))
+
         return True
 
-    elif cmd == "member":
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
+    elif cmd == "give":
+         if len(args) != 3 or not args[2].isdigit():
+             showHelp(sender)
 
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
-            x = int(args[1])
-            z = int(args[2])
+             return True
 
-        else:
-            showHelp(sender)
+         if sender.getName() not in Manager.players:
+             sender.sendMessage(''.join(["Can't find player ", sender.getName()]))
 
-            return True
+             return True
 
-    elif cmd == "guest":
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
+         player = Manager.getPlayer(sender.getName())
 
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
-            x = int(args[1])
-            z = int(args[2])
+         player.numPlots += int(args[2])
 
-        else:
-            showHelp(sender)
+         sender.sendMessage(''.join(["Player ", sender.getName(), " can now claim up to ", str(player.numPlots), " additional plots"]))
 
-            return True
+         return True
 
     else:
         showHelp(sender)
@@ -219,6 +216,5 @@ def showHelp(sender):
     sender.sendMessage("/plot info [x] [x]")
     sender.sendMessage("/plot tp <x> <z>")
     sender.sendMessage("/plot auto")
-    sender.sendMessage("/plot playerinfo <name>")
-    sender.sendMessage("/plot member <add/remove> <name>")
-    sender.sendMessage("/plot guest <add/remove> <name>")
+    sender.sendMessage("/plot playerinfo [name]")
+    sender.sendMessage("/plot give <name> <number>")

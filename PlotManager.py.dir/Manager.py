@@ -6,6 +6,8 @@ from math import floor
 
 import pickle
 
+import PhysicalMap
+
 # Plot size
 
 plotx = 256
@@ -48,7 +50,14 @@ def claim(name, x, z):
     if plot.status != PlotStatus.FREE:
         return False
 
+    if players[name].numPlots == 0:
+        return False
+
+    players[name].numPlots -= 1
+
     plot.claim(name)
+
+    PhysicalMap.claim(PhysicalMap.world, x, z)
 
     return True
 
@@ -56,6 +65,8 @@ def forceClaim(name, x, z):
     position = (x, z)
 
     plots[position].claim(name)
+
+    PhysicalMap.claim(PhysicalMap.world, x, z)
 
 # Unclaim
 
@@ -66,24 +77,35 @@ def unclaim(name, x, z):
 
     if plot.status != PlotStatus.CLAIMED or plot.owner != name:
         return False
+
+    players[name].numPlots += 1
     
     plot.status = PlotStatus.FREE
+
+    PhysicalMap.unclaim(PhysicalMap.world, x, z)
 
 def forceUnclaim(x, z):
     position = (x, z)
 
     plots[position].status = PlotStatus.FREE
 
+    PhysicalMap.unclaim(PhysicalMap.world, x, z)
+
+# Getters
+
 def getPlot(x, z):
     return plots[(x, z)]
+
+def getPlayer(name):
+    return players[name]
 
 # Coordinate transform
 
 def getPlotX(x):
-    return int(floor(x / plotx))
+    return int(x // plotx)
 
 def getPlotZ(z):
-    return int(floor(z / plotz))
+    return int(z // plotz)
 
 def getCentreX(x):
     return (x * plotx) + (plotx / 2)
