@@ -22,7 +22,6 @@ class PlotStatus:
     TEMP     = 2
 
     RESERVED = 3
-    SPECIAL  = 4
 
 class Plot:
     def __init__(self, status = PlotStatus.FREE):
@@ -31,6 +30,10 @@ class Plot:
     def claim(self, ownerName):
         self.status = PlotStatus.CLAIMED
         self.owner  = ownerName
+        self.date   = ctime()
+
+    def reserve(self):
+        self.status = PlotStatus.RESERVED
         self.date   = ctime()
 
 class Player:
@@ -57,7 +60,7 @@ def claim(name, x, z):
 
     plot.claim(name)
 
-    PhysicalMap.claim(PhysicalMap.world, x, z)
+    PhysicalMap.claim(x, z)
 
     return True
 
@@ -66,7 +69,21 @@ def forceClaim(name, x, z):
 
     plots[position].claim(name)
 
-    PhysicalMap.claim(PhysicalMap.world, x, z)
+    PhysicalMap.claim(x, z)
+
+def reserve(x, z):
+    position = (x, z)
+
+    plot = plots[position]
+
+    if plot.status != PlotStatus.FREE:
+        return False
+
+    plot.reserve()
+
+    PhysicalMap.claim(x, z)
+
+    return True
 
 # Unclaim
 
@@ -75,21 +92,26 @@ def unclaim(name, x, z):
 
     plot = plots[position]
 
-    if plot.status != PlotStatus.CLAIMED or plot.owner != name:
+    if (plot.status != PlotStatus.CLAIMED and plot.status != PlotStatus.TEMP) or plot.owner != name:
         return False
 
     players[name].numPlots += 1
     
     plot.status = PlotStatus.FREE
 
-    PhysicalMap.unclaim(PhysicalMap.world, x, z)
+    PhysicalMap.unclaim(x, z)
 
 def forceUnclaim(x, z):
     position = (x, z)
 
-    plots[position].status = PlotStatus.FREE
+    plot = plots[position]
 
-    PhysicalMap.unclaim(PhysicalMap.world, x, z)
+    if plot.status == PlotStatus.CLAIMED and plot.owner in players:
+        players[plot.owner].numPlots += 1
+
+    plot.status = PlotStatus.FREE
+
+    PhysicalMap.unclaim(x, z)
 
 # Getters
 

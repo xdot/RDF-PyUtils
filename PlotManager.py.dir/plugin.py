@@ -110,6 +110,8 @@ def onCommandPlot(sender, args):
 
         sender.teleport(loc)
 
+        return True
+
     elif cmd == "auto":
         if len(args) != 1:
             showHelp(sender)
@@ -185,6 +187,7 @@ def onCommandPlot(sender, args):
 
         return True
 
+    # Admin commands
     elif cmd == "give":
          if len(args) != 3 or not args[2].isdigit():
              showHelp(sender)
@@ -204,17 +207,61 @@ def onCommandPlot(sender, args):
 
          return True
 
+    elif cmd == "forceUnclaim":
+        if len(args) == 1:
+            x = Manager.getPlotX(sender.getLocation().getX())
+            z = Manager.getPlotZ(sender.getLocation().getZ())
+
+        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+            x = int(args[1])
+            z = int(args[2])
+        
+        else:
+            showHelp(sender)
+
+            return True
+
+        Manager.forceUnclaim(x, z)
+
+        sender.sendMessage(''.join(["Unclaimed plot ", str(x), ", ", str(z)]))
+
+        return True
+
+    elif cmd == "reserve":
+        if len(args) == 1:
+            x = Manager.getPlotX(sender.getLocation().getX())
+            z = Manager.getPlotZ(sender.getLocation().getZ())
+
+        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+            x = int(args[1])
+            z = int(args[2])
+        
+        else:
+            showHelp(sender)
+
+            return True
+
+        if Manager.reserve(x, z):
+            sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
+        else:
+            sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
+
+        return True
+
     else:
         showHelp(sender)
 
     return True
 
 def showHelp(sender):
-    sender.sendMessage("--- Plot Manager Help ---")
+    sender.sendMessage("--- Plot Manager /plot Help ---")
     sender.sendMessage("/plot claim [x] [z]")
     sender.sendMessage("/plot unclaim [x] [z]")
     sender.sendMessage("/plot info [x] [x]")
     sender.sendMessage("/plot tp <x> <z>")
     sender.sendMessage("/plot auto")
     sender.sendMessage("/plot playerinfo [name]")
+    sender.sendMessage("--- Admin commands ---")
     sender.sendMessage("/plot give <name> <number>")
+    sender.sendMessage("/plot forceUnclaim [x] [z]")
+    sender.sendMessage("/plot reserve [x] [z]")
