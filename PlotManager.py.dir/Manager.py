@@ -8,10 +8,24 @@ import pickle
 
 import PhysicalMap
 
+# Ops
+
+ops = []
+
+def initOps(path):
+    f = open(path, "rb")
+
+    for line in f.xreadlines():
+        ops.append(line.replace('\n', ''))
+
 # Plot size
 
 plotx = 256
 plotz = 256
+
+# Plots
+
+radius = 5
 
 # Structures
 

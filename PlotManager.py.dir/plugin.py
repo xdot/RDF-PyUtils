@@ -7,7 +7,8 @@ directory = "/plugins/PlotManager.py.dir"
 @hook.enable
 def onEnable():
     # Manager.load(directory)
-    pass
+    
+    Manager.initOps("ops.txt")
 
 @hook.disable
 def onDisable():
@@ -28,12 +29,17 @@ def onCommandPlot(sender, args):
             x = Manager.getPlotX(sender.getLocation().getX())
             z = Manager.getPlotZ(sender.getLocation().getZ())
 
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+        elif len(args) == 3:
             x = int(args[1])
             z = int(args[2])
 
         else:
             showHelp(sender)
+
+            return True
+
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
 
             return True
         
@@ -47,12 +53,17 @@ def onCommandPlot(sender, args):
             x = Manager.getPlotX(sender.getLocation().getX())
             z = Manager.getPlotZ(sender.getLocation().getZ())
 
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+        elif len(args) == 3:
             x = int(args[1])
             z = int(args[2])
         
         else:
             showHelp(sender)
+
+            return True
+
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
 
             return True
 
@@ -66,12 +77,17 @@ def onCommandPlot(sender, args):
             x = Manager.getPlotX(sender.getLocation().getX())
             z = Manager.getPlotZ(sender.getLocation().getZ())
 
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+        elif len(args) == 3:
             x = int(args[1])
             z = int(args[2])
 
         else:
             showHelp(sender)
+
+            return True
+
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
 
             return True
 
@@ -100,6 +116,11 @@ def onCommandPlot(sender, args):
 
         else:
             showHelp(sender)
+
+            return True
+
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
 
             return True
 
@@ -189,6 +210,11 @@ def onCommandPlot(sender, args):
 
     # Admin commands
     elif cmd == "give":
+         if sender.getName().lower() not in Manager.ops:
+             sender.sendMessage("You don't have permission to execute this command")
+
+             return True
+
          if len(args) != 3 or not args[2].isdigit():
              showHelp(sender)
 
@@ -208,6 +234,11 @@ def onCommandPlot(sender, args):
          return True
 
     elif cmd == "forceUnclaim":
+        if sender.getName().lower() not in Manager.ops:
+            sender.sendMessage("You don't have permission to execute this command")
+
+            return True
+
         if len(args) == 1:
             x = Manager.getPlotX(sender.getLocation().getX())
             z = Manager.getPlotZ(sender.getLocation().getZ())
@@ -221,6 +252,11 @@ def onCommandPlot(sender, args):
 
             return True
 
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+
+            return True
+
         Manager.forceUnclaim(x, z)
 
         sender.sendMessage(''.join(["Unclaimed plot ", str(x), ", ", str(z)]))
@@ -228,6 +264,11 @@ def onCommandPlot(sender, args):
         return True
 
     elif cmd == "reserve":
+        if sender.getName().lower() not in Manager.ops:
+            sender.sendMessage("You don't have permission to execute this command")
+
+            return True
+
         if len(args) == 1:
             x = Manager.getPlotX(sender.getLocation().getX())
             z = Manager.getPlotZ(sender.getLocation().getZ())
@@ -238,6 +279,11 @@ def onCommandPlot(sender, args):
         
         else:
             showHelp(sender)
+
+            return True
+
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
 
             return True
 

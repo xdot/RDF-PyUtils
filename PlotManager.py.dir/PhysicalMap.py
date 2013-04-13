@@ -67,6 +67,11 @@ def onCommandPlotmap(sender, args):
 
     plotCoords = getPlotCoords(int(sender.getLocation().getX()), int(sender.getLocation().getZ()))
 
+    if plotCoords[0] < -Manager.radius or plotCoords[0] >= Manager.radius or plotCoords[1] < -Manager.radius or plotCoords[1] >= Manager.radius:
+        sender.sendMessage(''.join(["Plot ", str(plotCoords[0]), ", ", str(plotCoords[1]), " is out of range"]))
+
+        return True
+
     if cmd == "claim":
         if len(args) != 1:
             showHelp(sender)
@@ -132,6 +137,11 @@ def onCommandPlotmap(sender, args):
         x = Manager.getCentreX(plotCoords[0])
         z = Manager.getCentreZ(plotCoords[1])
 
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+
+            return True
+
         loc.setX(x)
         loc.setZ(z)
 
@@ -140,6 +150,11 @@ def onCommandPlotmap(sender, args):
         return True
 
     elif cmd == "generate":
+        if sender.getName().lower() not in Manager.ops:
+            sender.sendMessage("You don't have permission to execute this command")
+
+            return True
+
         if len(args) != 2 or not args[1].isdigit():
             showHelp(sender)
 
@@ -159,6 +174,11 @@ def onCommandPlotmap(sender, args):
         return True
 
     elif cmd == "update":
+        if sender.getName().lower() not in Manager.ops:
+            sender.sendMessage("You don't have permission to execute this command")
+
+            return True
+
         if len(args) != 1:
             showHelp(sender)
             
