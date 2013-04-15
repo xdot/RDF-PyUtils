@@ -36,6 +36,7 @@ class PlotStatus:
     TEMP     = 2
 
     RESERVED = 3
+    SPECIAL  = 4
 
 class Plot:
     def __init__(self, status = PlotStatus.FREE):
@@ -49,6 +50,11 @@ class Plot:
     def reserve(self):
         self.status = PlotStatus.RESERVED
         self.date   = ctime()
+
+    def special(self, description):
+        self.status      = PlotStatus.SPECIAL
+        self.description = description
+        self.date        = ctime()
 
 class Player:
     def __init__(self, numPlots = 1):
@@ -94,6 +100,20 @@ def reserve(x, z):
         return False
 
     plot.reserve()
+
+    PhysicalMap.claim(x, z)
+
+    return True
+
+def special(x, z, description):
+    position = (x, z)
+
+    plot = plots[position]
+
+    if plot.status != PlotStatus.FREE:
+        return False
+
+    plot.special(description)
 
     PhysicalMap.claim(x, z)
 

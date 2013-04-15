@@ -109,6 +109,9 @@ def onCommandPlot(sender, args):
         elif plot.status == Manager.PlotStatus.RESERVED:
             sender.sendMessage("Status: Reserved")
 
+        elif plot.status == Manager.PlotStatus.SPECIAL:
+            sender.sendMessage(''.join(["Status: ", plot.description]))
+
     elif cmd == "tp":
         if len(args) == 3:
             x = Manager.getCentreX(int(args[1]))
@@ -273,7 +276,7 @@ def onCommandPlot(sender, args):
             x = Manager.getPlotX(sender.getLocation().getX())
             z = Manager.getPlotZ(sender.getLocation().getZ())
 
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+        elif len(args) == 3:
             x = int(args[1])
             z = int(args[2])
         
@@ -288,6 +291,37 @@ def onCommandPlot(sender, args):
             return True
 
         if Manager.reserve(x, z):
+            sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
+        else:
+            sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
+
+        return True
+
+    elif cmd == "special":
+        if sender.getName().lower() not in Manager.ops:
+            sender.sendMessage("You don't have permission to execute this command")
+
+            return True
+
+        if len(args) == 2:
+            x = Manager.getPlotX(sender.getLocation().getX())
+            z = Manager.getPlotZ(sender.getLocation().getZ())
+
+        elif len(args) == 4:
+            x = int(args[2])
+            z = int(args[3])
+        
+        else:
+            showHelp(sender)
+
+            return True
+
+        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
+            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+
+            return True
+
+        if Manager.special(x, z, str(args[1])):
             sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
         else:
             sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
@@ -311,3 +345,4 @@ def showHelp(sender):
     sender.sendMessage("/plot give <name> <number>")
     sender.sendMessage("/plot forceUnclaim [x] [z]")
     sender.sendMessage("/plot reserve [x] [z]")
+    sender.sendMessage("/plot special <description> [x] [z]")

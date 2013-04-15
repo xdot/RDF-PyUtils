@@ -107,6 +107,9 @@ def onCommandPlotmap(sender, args):
         elif plot.status == Manager.PlotStatus.RESERVED:
             sender.sendMessage("Status: Reserved")
 
+        elif plot.status == Manager.PlotStatus.SPECIAL:
+            sender.sendMessage(''.join(["Status: ", plot.description]))
+
         return True
 
     elif cmd == "tp":
