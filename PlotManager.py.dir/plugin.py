@@ -7,14 +7,337 @@ directory = "/plugins/PlotManager.py.dir"
 @hook.enable
 def onEnable():
     # Manager.load(directory)
-    
-    Manager.initOps("ops.txt")
+    pass
 
 @hook.disable
 def onDisable():
     # Manager.save(directory)
     pass
 
+# Permission nodes:
+# plotmanager.claim   - Claim/Auto
+# plotmanager.info    - Info/PlayerInfo
+# plotmanager.give    - Give
+# plotmanager.admin   - ForceUnclaim
+# plotmanager.reserve - Reserve/Special
+
+##################################
+# Claim a plot
+##################################
+def onCommandClaim(sender, args):
+    if not sender.hasPermission("plotmanager.claim"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 1:
+        x = Manager.getPlotX(sender.getLocation().getX())
+        z = Manager.getPlotZ(sender.getLocation().getZ())
+
+    elif len(args) == 3:
+        x = int(args[1])
+        z = int(args[2])
+
+    else:
+        sender.sendMessage("Usage: /plot claim [x] [z]")
+        return
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        return
+        
+    if Manager.claim(sender.getName(), x, z):
+        sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
+    else:
+        sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that this is a free plot and that you are allowed to claim plots"]))
+
+##################################
+# Unclaim a plot
+##################################
+def onCommandUnclaim(sender, args):
+    if len(args) == 1:
+        x = Manager.getPlotX(sender.getLocation().getX())
+        z = Manager.getPlotZ(sender.getLocation().getZ())
+
+    elif len(args) == 3:
+        x = int(args[1])
+        z = int(args[2])
+        
+    else:
+        sender.sendMessage("Usage: /plot unclaim [x] [z]")
+        return 
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        return
+
+    if Manager.unclaim(sender.getName(), x, z):
+        sender.sendMessage(''.join(["You successfully unclaimed plot ", str(x), ", ", str(z)]))
+    else:
+        sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that you are the owner of this plot"]))
+
+##################################
+# Print information about a plot
+##################################
+def onCommandInfo(sender, args):
+    if not sender.hasPermission("plotmanager.info"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 1:
+        x = Manager.getPlotX(sender.getLocation().getX())
+        z = Manager.getPlotZ(sender.getLocation().getZ())
+
+    elif len(args) == 3:
+        x = int(args[1])
+        z = int(args[2])
+
+    else:
+        sender.sendMessage("Usage: /plot info [x] [z]")
+        return
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        return
+
+    plot = Manager.getPlot(x, z)
+
+    sender.sendMessage(''.join(["--- Plot ", str(x), ", ", str(z), " ---"]))
+
+    if plot.status == Manager.PlotStatus.FREE:
+        sender.sendMessage("Status: Free")
+
+    elif plot.status == Manager.PlotStatus.CLAIMED:
+        sender.sendMessage(''.join(["Status: Claimed by ", plot.owner]))
+        sender.sendMessage(''.join(["Claimed at: ", plot.date]))
+
+    elif plot.status == Manager.PlotStatus.TEMP:
+        sender.sendMessage(''.join(["Status: Temporarily claimed by ", plot.owner]))
+        sender.sendMessage(''.join(["Claimed at: ", plot.date]))
+
+    elif plot.status == Manager.PlotStatus.RESERVED:
+        sender.sendMessage("Status: Reserved")
+
+    elif plot.status == Manager.PlotStatus.SPECIAL:
+        sender.sendMessage(''.join(["Status: ", plot.description]))
+
+##################################
+# Teleport to a plot
+##################################
+def onCommandTp(sender, args):
+    if not sender.hasPermission("plotmanager.tp"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 3:
+        x = Manager.getCentreX(int(args[1]))
+        z = Manager.getCentreZ(int(args[2]))
+
+    else:
+        sender.sendMessage("Usage: /plot tp <x> <z>")
+        return
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", args[1], ", ", args[2], " is out of range"]))
+        return
+
+    loc = sender.getLocation()
+
+    loc.setX(x)
+    loc.setZ(z)
+
+    sender.teleport(loc)
+
+##################################
+# Auto-claim next free plot
+##################################
+def onCommandAuto(sender, args):
+    if not sender.hasPermission("plotmanager.claim"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+    
+    if len(args) != 1:
+        sender.sendMessage("Usage: /plot auto")
+        return
+
+    x = 0
+    z = 0
+    step = 1
+
+    name = sender.getName()
+
+    while True:
+        for i in xrange(0, step):
+            if Manager.claim(name, x, z):
+	        sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
+                return
+
+            x -= 1
+           
+        for i in xrange(0, step):
+            if Manager.claim(name, x, z):
+	        sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
+                return
+
+            z -= 1
+
+        step += 2
+
+        for i in xrange(0, step):
+            if Manager.claim(name, x, z):
+	        sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
+                return
+
+            x += 1
+
+        for i in xrange(0, step):
+            if Manager.claim(name, x, z):
+                sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
+                return
+
+            x -= 1
+        
+    sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
+
+##################################
+# Print information about a player
+##################################
+def onCommandPlayerinfo(sender, args):
+    if not sender.hasPermission("plotmanager.info"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 2:
+        player = args[1]
+
+    elif len(args) == 1:
+        player = sender.getName()
+
+    else:
+        sender.sendMessage("Usage: /plot info [name]")
+        return
+
+    if player not in Manager.players:
+        sender.sendMessage(''.join(["Can't find player ", player]))
+        return
+
+    sender.sendMessage(''.join(["--- Plots claimed by ", player, " ---"]))
+
+    for pos, plot in Manager.plots.iteritems():
+        if plot.status == Manager.PlotStatus.CLAIMED and plot.owner == player:
+            sender.sendMessage(''.join([str(pos[0]), ", ", str(pos[1])]))
+
+    sender.sendMessage(''.join([player, " can claim up to ", str(Manager.players[player].numPlots), " additional plots"]))
+
+##################################
+# Give a player an extra plot
+##################################
+def onCommandGive(sender, args):
+    if not sender.hasPermission("plotmanager.give"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) != 3 or not args[2].isdigit():
+        sender.sendMessage("Usage: /plot give <name> <number>")
+        return
+
+    if args[1] not in Manager.players:
+        sender.sendMessage(''.join(["Can't find player ", sender.getName()]))
+
+        return True
+
+    player = Manager.getPlayer(args[1])
+
+    player.numPlots += int(args[2])
+
+    sender.sendMessage(''.join(["Player ", args[1], " can now claim up to ", str(player.numPlots), " additional plots"]))
+
+##################################
+# Forcefully unclaim a plot
+##################################
+def onCommandForceUnclaim(sender, args):
+    if not sender.hasPermission("plotmanager.admin"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 1:
+        x = Manager.getPlotX(sender.getLocation().getX())
+        z = Manager.getPlotZ(sender.getLocation().getZ())
+
+    elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
+        x = int(args[1])
+        z = int(args[2])
+        
+    else:
+        sender.sendMessage("Usage: /plot forceUnclaim [x] [z]")
+        return
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        return
+
+    Manager.forceUnclaim(x, z)
+
+    sender.sendMessage(''.join(["Forcefully unclaimed plot ", str(x), ", ", str(z)]))
+
+##################################
+# Reserve a plot
+##################################
+def onCommandReserve(sender, args):
+    if not sender.hasPermission("plotmanager.reserve"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 1:
+        x = Manager.getPlotX(sender.getLocation().getX())
+        z = Manager.getPlotZ(sender.getLocation().getZ())
+
+    elif len(args) == 3:
+        x = int(args[1])
+        z = int(args[2])
+        
+    else:
+        sender.sendMessage("Usage: /plot reserve [x] [z]")
+        return
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        return
+
+    if Manager.reserve(x, z):
+        sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
+    else:
+        sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
+
+##################################
+# Reserve a plot (Custom status)
+##################################
+def onCommandSpecial(sender, args):
+    if not sender.hasPermission("plotmanager.reserve"):
+        sender.sendMessage("You don't have enough permissions to execute this command")
+        return
+
+    if len(args) == 2:
+        x = Manager.getPlotX(sender.getLocation().getX())
+        z = Manager.getPlotZ(sender.getLocation().getZ())
+
+    elif len(args) == 4:
+        x = int(args[2])
+        z = int(args[3])
+        
+    else:
+        sender.sendMessage("Usage: /plot special [x] [z]")
+        return
+
+    if Manager.isOutOfRange(x, z):
+        sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
+        return
+
+    if Manager.special(x, z, str(args[1])):
+        sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
+    else:
+        sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
+
+# Entry point
 @hook.command("plot")
 def onCommandPlot(sender, args):
     if len(args) == 0:
@@ -25,308 +348,34 @@ def onCommandPlot(sender, args):
     cmd = args[0]
      
     if cmd == "claim":
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
-
-        elif len(args) == 3:
-            x = int(args[1])
-            z = int(args[2])
-
-        else:
-            showHelp(sender)
-
-            return True
-
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
-
-            return True
-        
-        if Manager.claim(sender.getName(), x, z):
-            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-        else:
-            sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that this is a free plot and that you are allowed to claim plots"]))
+        onCommandClaim(sender, args)
      
     elif cmd == "unclaim":
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
-
-        elif len(args) == 3:
-            x = int(args[1])
-            z = int(args[2])
-        
-        else:
-            showHelp(sender)
-
-            return True
-
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
-
-            return True
-
-        if Manager.unclaim(sender.getName(), x, z):
-            sender.sendMessage(''.join(["You successfully unclaimed plot ", str(x), ", ", str(z)]))
-        else:
-            sender.sendMessage(''.join(["Failed to unclaim plot ", str(x), ", ", str(z), ". Make sure that you are the owner of this plot"]))
+        onCommandUnclaim(sender, args)
 
     elif cmd == "info":
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
-
-        elif len(args) == 3:
-            x = int(args[1])
-            z = int(args[2])
-
-        else:
-            showHelp(sender)
-
-            return True
-
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
-
-            return True
-
-        plot = Manager.getPlot(x, z)
-
-        sender.sendMessage(''.join(["--- Plot ", str(x), ", ", str(z), " ---"]))
-
-        if plot.status == Manager.PlotStatus.FREE:
-            sender.sendMessage("Status: Free")
-
-        elif plot.status == Manager.PlotStatus.CLAIMED:
-            sender.sendMessage(''.join(["Status: Claimed by ", plot.owner]))
-            sender.sendMessage(''.join(["Claimed at: ", plot.date]))
-
-        elif plot.status == Manager.PlotStatus.TEMP:
-            sender.sendMessage(''.join(["Status: Temporarily claimed by ", plot.owner]))
-            sender.sendMessage(''.join(["Claimed at: ", plot.date]))
-
-        elif plot.status == Manager.PlotStatus.RESERVED:
-            sender.sendMessage("Status: Reserved")
-
-        elif plot.status == Manager.PlotStatus.SPECIAL:
-            sender.sendMessage(''.join(["Status: ", plot.description]))
+        onCommandInfo(sender, args)
 
     elif cmd == "tp":
-        if len(args) == 3:
-            x = Manager.getCentreX(int(args[1]))
-            z = Manager.getCentreZ(int(args[2]))
-
-        else:
-            showHelp(sender)
-
-            return True
-
-        if int(args[1]) < -Manager.radius or int(args[1]) >= Manager.radius or int(args[2]) < -Manager.radius or int(args[2]) >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", args[1], ", ", args[2], " is out of range"]))
-
-            return True
-
-        loc = sender.getLocation()
-
-        loc.setX(x)
-        loc.setZ(z)
-
-        sender.teleport(loc)
-
-        return True
+        onCommandTp(sender, args)
 
     elif cmd == "auto":
-        if len(args) != 1:
-            showHelp(sender)
-
-            return True
-
-        x = 0
-        z = 0
-
-        step = 1
-
-        name = sender.getName()
-
-        while True:
-            for i in xrange(0, step):
-                if Manager.claim(name, x, z):
-	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-                    return True
-
-                x -= 1
-            
-            for i in xrange(0, step):
-                if Manager.claim(name, x, z):
-	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-                    return True
-
-                z -= 1
-
-            step += 2
-
-            for i in xrange(0, step):
-                if Manager.claim(name, x, z):
-	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-                    return True
-
-                x += 1
-
-            for i in xrange(0, step):
-                if Manager.claim(name, x, z):
-	            sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-                    return True
-
-                x -= 1
-        
-        sender.sendMessage(''.join(["You successfully claimed plot ", str(x), ", ", str(z)]))
-
-        return True
+        onCommandAuto(sender, args)
 
     elif cmd == "playerinfo":
-        if len(args) == 2:
-            player = args[1]
+        onCommandPlayerinfo(sender, args)
 
-        elif len(args) == 1:
-            player = sender.getName()
-
-        else:
-             showHelp(sender)
-
-             return True
-
-        if player not in Manager.players:
-             sender.sendMessage(''.join(["Can't find player ", player]))
-
-             return True
-
-        sender.sendMessage(''.join(["--- Plots claimed by ", player, " ---"]))
-
-        for pos, plot in Manager.plots.iteritems():
-            if plot.status == Manager.PlotStatus.CLAIMED and plot.owner == player:
-                sender.sendMessage(''.join([str(pos[0]), ", ", str(pos[1])]))
-
-        sender.sendMessage(''.join([player, " can claim up to ", str(Manager.players[player].numPlots), " additional plots"]))
-
-        return True
-
-    # Admin commands
     elif cmd == "give":
-         if sender.getName().lower() not in Manager.ops:
-             sender.sendMessage("You don't have permission to execute this command")
-
-             return True
-
-         if len(args) != 3 or not args[2].isdigit():
-             showHelp(sender)
-
-             return True
-
-         if sender.getName() not in Manager.players:
-             sender.sendMessage(''.join(["Can't find player ", sender.getName()]))
-
-             return True
-
-         player = Manager.getPlayer(sender.getName())
-
-         player.numPlots += int(args[2])
-
-         sender.sendMessage(''.join(["Player ", sender.getName(), " can now claim up to ", str(player.numPlots), " additional plots"]))
-
-         return True
+        onCommandGive(sender, args)
 
     elif cmd == "forceUnclaim":
-        if sender.getName().lower() not in Manager.ops:
-            sender.sendMessage("You don't have permission to execute this command")
-
-            return True
-
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
-
-        elif len(args) == 3 and args[1].isdigit() and args[2].isdigit():
-            x = int(args[1])
-            z = int(args[2])
-        
-        else:
-            showHelp(sender)
-
-            return True
-
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
-
-            return True
-
-        Manager.forceUnclaim(x, z)
-
-        sender.sendMessage(''.join(["Unclaimed plot ", str(x), ", ", str(z)]))
-
-        return True
+        onCommandForceUnclaim(sender, args)
 
     elif cmd == "reserve":
-        if sender.getName().lower() not in Manager.ops:
-            sender.sendMessage("You don't have permission to execute this command")
-
-            return True
-
-        if len(args) == 1:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
-
-        elif len(args) == 3:
-            x = int(args[1])
-            z = int(args[2])
-        
-        else:
-            showHelp(sender)
-
-            return True
-
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
-
-            return True
-
-        if Manager.reserve(x, z):
-            sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
-        else:
-            sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
-
-        return True
+        onCommandReserve(sender, args)
 
     elif cmd == "special":
-        if sender.getName().lower() not in Manager.ops:
-            sender.sendMessage("You don't have permission to execute this command")
-
-            return True
-
-        if len(args) == 2:
-            x = Manager.getPlotX(sender.getLocation().getX())
-            z = Manager.getPlotZ(sender.getLocation().getZ())
-
-        elif len(args) == 4:
-            x = int(args[2])
-            z = int(args[3])
-        
-        else:
-            showHelp(sender)
-
-            return True
-
-        if x < -Manager.radius or x >= Manager.radius or z < -Manager.radius or z >= Manager.radius:
-            sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
-
-            return True
-
-        if Manager.special(x, z, str(args[1])):
-            sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
-        else:
-            sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
-
-        return True
+        onCommandSpecial(sender, args)
 
     else:
         showHelp(sender)

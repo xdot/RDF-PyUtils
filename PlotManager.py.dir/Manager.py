@@ -8,16 +8,6 @@ import pickle
 
 import PhysicalMap
 
-# Ops
-
-ops = []
-
-def initOps(path):
-    f = open(path, "rb")
-
-    for line in f.xreadlines():
-        ops.append(line.replace('\n', ''))
-
 # Plot size
 
 plotx = 256
@@ -168,6 +158,9 @@ def getCentreX(x):
 
 def getCentreZ(z):
     return (z * plotz) + (plotz / 2)
+
+def isOutOfRange(x, z):
+    return x < -radius or x >= radius or z < -radius or x >= radius
 
 # Persistence
 
