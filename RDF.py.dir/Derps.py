@@ -19,7 +19,7 @@ def broadcast_derp(sender, message):
 
 @hook.command("derp", description="Let your derp shine!")
 def onCommandDerp(sender, args):
-    if len(args) > 0:
+    if len(args) > 0 and args[0].isdigit():
         index = int(args[0])
         
         if index >= len(derps) or index < 0:

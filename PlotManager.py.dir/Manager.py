@@ -165,15 +165,21 @@ def isOutOfRange(x, z):
 # Persistence
 
 def save(directory):
+    global plots
+    global players
+
     pickle.dump(plots, open(directory + "/PMplots.txt", "wb"))
     pickle.dump(players, open(directory + "/PMplayers.txt", "wb"))
 
 def load(directory):
+    global plots
+    global players
+
     try:
         plots = pickle.load(open(directory + "/PMplots.txt", "rb"))
         players = pickle.load(open(directory + "/PMplayers.txt", "rb"))
 
-    except IOError, EOFError:
+    except (IOError, EOFError):
         print "Plot data is missing, creating new files"
 
         save(directory)

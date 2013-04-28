@@ -2,17 +2,18 @@ import Manager
 
 import PhysicalMap
 
-directory = "/plugins/PlotManager.py.dir"
+from org.bukkit.Bukkit import getWorlds
+
+directory = "plugins/PlotManager.py.dir"
 
 @hook.enable
 def onEnable():
-    # Manager.load(directory)
-    pass
+    Manager.load(directory)
+    PhysicalMap.world = getWorlds()[0]
 
 @hook.disable
 def onDisable():
-    # Manager.save(directory)
-    pass
+    Manager.save(directory)
 
 # Permission nodes:
 # plotmanager.claim   - Claim/Auto
@@ -132,13 +133,30 @@ def onCommandTp(sender, args):
         x = Manager.getCentreX(int(args[1]))
         z = Manager.getCentreZ(int(args[2]))
 
+        if Manager.isOutOfRange(int(args[1]), int(args[2])):
+            sender.sendMessage(''.join(["Plot ", args[1], ", ", args[2], " is out of range"]))
+            return
+
+    elif len(args) == 2:
+        name = str(args[1])
+
+        exists = False
+
+        for pos, plot in Manager.plots.iteritems():
+            if plot.status == Manager.PlotStatus.CLAIMED and plot.owner == name:
+                x = Manager.getCentreX(pos[0])
+                z = Manager.getCentreZ(pos[1])
+
+                exists = True
+
+        if not exists:
+            sender.sendMessage(''.join(["Can't find player ", name]))
+            return True
+
     else:
-        sender.sendMessage("Usage: /plot tp <x> <z>")
+        sender.sendMessage("Usage: /plot tp <x> <z> OR <name>")
         return
 
-    if Manager.isOutOfRange(x, z):
-        sender.sendMessage(''.join(["Plot ", args[1], ", ", args[2], " is out of range"]))
-        return
 
     loc = sender.getLocation()
 
@@ -332,7 +350,9 @@ def onCommandSpecial(sender, args):
         sender.sendMessage(''.join(["Plot ", str(x), ", ", str(z), " is out of range"]))
         return
 
-    if Manager.special(x, z, str(args[1])):
+    del args[0]
+
+    if Manager.special(x, z, ' '.join(args)):
         sender.sendMessage(''.join(["You successfully reserved plot ", str(x), ", ", str(z)]))
     else:
         sender.sendMessage(''.join(["Failed to reserve plot ", str(x), ", ", str(z), ". Make sure that this is a free plot"]))
@@ -387,7 +407,7 @@ def showHelp(sender):
     sender.sendMessage("/plot claim [x] [z]")
     sender.sendMessage("/plot unclaim [x] [z]")
     sender.sendMessage("/plot info [x] [x]")
-    sender.sendMessage("/plot tp <x> <z>")
+    sender.sendMessage("/plot tp <x> <z> OR <name>")
     sender.sendMessage("/plot auto")
     sender.sendMessage("/plot playerinfo [name]")
     sender.sendMessage("--- Admin commands ---")
